@@ -1,0 +1,15 @@
+{
+  "name": "celigo-receiver",
+  "version": "1.0.0",
+  "description": "Google Cloud Function Gen 2 that sends HMAC SHA-256 signed payloads to a Celigo Webhook Listener",
+  "main": "index.js",
+  "engines": {
+    "node": "20"
+  },
+  "scripts": {
+    "start": "npx functions-framework --target=celigoReceiver --port=8080"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.0.0"
+  }
+}
