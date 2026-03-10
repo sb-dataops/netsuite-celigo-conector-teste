@@ -1,14 +1,77 @@
 const crypto = require("crypto");
 const express = require("express");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 app.use(express.json());
+
+function getAuthorizedClients() {
+  const raw = process.env.AUTHORIZED_CLIENTS;
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    console.error("AUTHORIZED_CLIENTS is not valid JSON");
+    return null;
+  }
+}
+
+function authenticateToken(req, res, next) {
+  const jwtSecret = process.env.JWT_SIGNING_KEY;
+  if (!jwtSecret) {
+    return res.status(500).json({ success: false, error: "JWT signing key not configured" });
+  }
+
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ success: false, error: "Missing or invalid Authorization header. Use: Bearer <token>" });
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, jwtSecret);
+    req.clientId = decoded.sub;
+    next();
+  } catch (err) {
+    const message = err.name === "TokenExpiredError" ? "Token expired" : "Invalid token";
+    return res.status(401).json({ success: false, error: message });
+  }
+}
 
 app.get("/health", (_req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
-app.post("/webhook/celigo", async (req, res) => {
+app.post("/auth/token", (req, res) => {
+  const { client_id, client_secret } = req.body;
+
+  if (!client_id || !client_secret) {
+    return res.status(400).json({ success: false, error: "client_id and client_secret are required" });
+  }
+
+  const clients = getAuthorizedClients();
+  if (!clients) {
+    return res.status(500).json({ success: false, error: "Authorized clients not configured" });
+  }
+
+  if (clients[client_id] !== client_secret) {
+    return res.status(401).json({ success: false, error: "Invalid credentials" });
+  }
+
+  const jwtSecret = process.env.JWT_SIGNING_KEY;
+  if (!jwtSecret) {
+    return res.status(500).json({ success: false, error: "JWT signing key not configured" });
+  }
+
+  const expiresIn = 3600;
+  const token = jwt.sign({ sub: client_id }, jwtSecret, { expiresIn });
+
+  console.log(`Token issued for client: ${client_id}`);
+  return res.status(200).json({ success: true, token, expires_in: expiresIn });
+});
+
+app.post("/webhook/celigo", authenticateToken, async (req, res) => {
   const { CELIGO_WEBHOOK_URL, HMAC_SECRET } = process.env;
 
   if (!CELIGO_WEBHOOK_URL || !HMAC_SECRET) {
@@ -51,7 +114,7 @@ app.post("/webhook/celigo", async (req, res) => {
     }
 
     const data = await response.text();
-    console.log("Celigo webhook call succeeded:", data);
+    console.log(`Celigo webhook call succeeded (client: ${req.clientId}):`, data);
 
     return res.status(200).json({
       success: true,
