@@ -11,15 +11,94 @@ functions.http("celigoReceiver", async (req, res) => {
   }
 
   const payload = {
-    orderId: "PO-2026-00142",
-    customerName: "Acme Corp",
-    items: [
-      { sku: "WIDGET-A", description: "Widget Alpha", quantity: 25, unitPrice: 14.5 },
-      { sku: "GADGET-B", description: "Gadget Beta", quantity: 10, unitPrice: 32.0 },
-    ],
-    total: 682.5,
-    currency: "USD",
-    createdAt: new Date().toISOString(),
+    sale: {
+      id: 1350470,
+      createdAt: "2026-01-26",
+      statusDesc: "Aberto",
+
+      buyer: {
+        id: 1575533,
+        name: "Horacio Maximiliano Iervasi",
+        docNumber: "20288996653",
+        identitydoctype: "CUIT",
+        email: null,
+        phone: null,
+      },
+
+      seller: {
+        id: 1307093,
+        name: "JUNCAL SA",
+        docNumber: "30709876543",
+      },
+
+      eventManager: {
+        id: 10,
+        entityId: 134114,
+        countryIso: "AR",
+        erpKey: "s4b-erp",
+      },
+
+      eventProject: {
+        id: 1189437,
+        desc: "NARVAEZ BID - 30707001786 INTERDINAMICA S.A.",
+        creationDate: "2025-09-17T13:23:18",
+        businessUnitNumber: 100,
+        businessSegmentNumber: 88,
+        businessUnitId: 176,
+        businessSegmentId: 105,
+        isIntegrated: false,
+        platformProject: true,
+      },
+
+      event: {
+        id: 776656,
+        description: "INTERDINAMICA",
+        modalityId: 1,
+        endDate: "2026-01-15T14:00:00.000+0000",
+        auctioneerId: 1570891,
+        eventManagerContactEmail: null,
+        locale: {
+          acronym: "es_AR",
+          description: "Espanhol - Argentina",
+          currency: "ARS",
+          countryIso: "AR",
+        },
+        city: null,
+        state: null,
+      },
+
+      offer: {
+        lotNumber: 27,
+      },
+
+      entries: [
+        {
+          id: 2894203,
+          itemTypeId: 5,
+          itemTypeDescription: "Encargos de Administracion",
+          itemValue: 41400,
+          itemTotalValue: 41400,
+        },
+        {
+          id: 2894204,
+          itemTypeId: 8,
+          itemTypeDescription: "Comision del Martillero",
+          itemValue: 12500,
+          itemTotalValue: 12500,
+        },
+      ],
+
+      entryGroups: [
+        {
+          id: 2894203,
+          paymentDate: "2026-01-29",
+          payee: { id: 134114 },
+          paymentAccount: {
+            methodDescription: "Deposito",
+          },
+        },
+      ],
+    },
   };
 
   const body = JSON.stringify(payload);
