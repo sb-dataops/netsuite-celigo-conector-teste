@@ -2,3 +2,5 @@ node_modules/
 .env.yaml
 docs/*
 docs/
+celigo_flow/*
+celigo_flow/
