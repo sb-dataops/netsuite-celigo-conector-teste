@@ -1,0 +1,25 @@
+{
+  "_id": "69b19cab0872e571ed9ccb57",
+  "name": "Upsert Auction",
+  "description": "Upsert Auction",
+  "_connectionId": "69b18a241522f3c06d7affaa",
+  "apiIdentifier": "ed233a46a0",
+  "asynchronous": true,
+  "isLookup": true,
+  "oneToMany": false,
+  "http": {
+    "relativeURI": "/api/customrecord/auction",
+    "method": "POST",
+    "body": "{\n  \"externalId\": \"{{sale.event.id}}\",\n  \"name\": \"{{sale.event.description}}\",\n  \"custrecord_finley_event_id\": \"{{sale.event.id}}\",\n  \"custrecord_auction_end_date\": \"{{sale.event.endDate}}\",\n  \"custrecord_auction_currency_code\": \"{{sale.event.locale.currency}}\",\n  \"custrecord_auction_locale\": \"{{sale.event.locale.acronym}}\",\n  \"custrecord_auction_parent_project\": \"{{_project.internalId}}\",\n  \"custrecord_auction_subsidiary_ref\": \"{{_subsidiary.internalId}}\"\n}",
+    "isRest": false,
+    "sendAuthForFileDownloads": false,
+    "formType": "http",
+    "response": {
+      "twoDArray": {
+        "doNotNormalize": false,
+        "hasHeader": false
+      }
+    }
+  },
+  "adaptorType": "HTTPExport"
+}

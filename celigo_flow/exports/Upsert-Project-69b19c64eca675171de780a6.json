@@ -1,0 +1,25 @@
+{
+  "_id": "69b19c64eca675171de780a6",
+  "name": "Upsert Project",
+  "description": "Upsert Project",
+  "_connectionId": "69b18a241522f3c06d7affaa",
+  "apiIdentifier": "e7cbb87a64",
+  "asynchronous": true,
+  "isLookup": true,
+  "oneToMany": false,
+  "http": {
+    "relativeURI": "/api/project",
+    "method": "POST",
+    "body": "{\n  \"externalId\": \"{{sale.eventProject.id}}\",\n  \"projectName\": \"{{sale.eventProject.desc}}\",\n  \"startDate\": \"{{sale.eventProject.creationDate}}\",\n  \"subsidiary\": \"{{_subsidiary.internalId}}\",\n  \"department\": \"{{sale.eventProject.businessUnitNumber}}\",\n  \"class\": \"{{sale.eventProject.businessSegmentNumber}}\",\n  \"custentity_finley_country_iso\": \"{{sale.eventManager.countryIso}}\"\n}",
+    "isRest": false,
+    "sendAuthForFileDownloads": false,
+    "formType": "http",
+    "response": {
+      "twoDArray": {
+        "doNotNormalize": false,
+        "hasHeader": false
+      }
+    }
+  },
+  "adaptorType": "HTTPExport"
+}

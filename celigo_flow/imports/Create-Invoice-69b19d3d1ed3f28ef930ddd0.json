@@ -1,0 +1,26 @@
+{
+  "_id": "69b19d3d1ed3f28ef930ddd0",
+  "name": "Create Invoice",
+  "description": "Create Invoice",
+  "_connectionId": "69b18a241522f3c06d7affaa",
+  "apiIdentifier": "i20cb85b30",
+  "ignoreExisting": false,
+  "ignoreMissing": false,
+  "oneToMany": false,
+  "http": {
+    "relativeURI": [
+      "/api/invoice"
+    ],
+    "method": [
+      "POST"
+    ],
+    "body": [
+      "{\n  \"externalId\": \"INV-{{sale.id}}-{{sale.entries[0].id}}\",\n  \"trandate\": \"{{sale.createdAt}}\",\n  \"entity\": \"{{_customer.internalId}}\",\n  \"subsidiary\": \"{{_subsidiary.internalId}}\",\n  \"currency\": \"{{sale.event.locale.currency}}\",\n  \"countryIso\": \"{{sale.event.locale.countryIso}}\",\n  \"job\": \"{{_project.internalId}}\",\n  \"custbody_seller_vendor\": \"{{_vendor.internalId}}\",\n  \"custbody_auction_ref\": \"{{_auction.internalId}}\",\n  \"custbody_lot_reference\": \"{{_lot.internalId}}\",\n  \"custbody_finley_sale_id\": \"{{sale.id}}\",\n  \"lines\": [\n    {\n      \"item\": \"{{_item.internalId}}\",\n      \"description\": \"{{sale.entries[0].itemTypeDescription}}\",\n      \"rate\": {{sale.entries[0].itemValue}},\n      \"quantity\": 1,\n      \"amount\": {{sale.entries[0].itemTotalValue}},\n      \"custcol_finley_entry_id\": \"{{sale.entries[0].id}}\"\n    }\n  ]\n}"
+    ],
+    "batchSize": 1,
+    "sendPostMappedData": true,
+    "isRest": false,
+    "formType": "http"
+  },
+  "adaptorType": "HTTPImport"
+}

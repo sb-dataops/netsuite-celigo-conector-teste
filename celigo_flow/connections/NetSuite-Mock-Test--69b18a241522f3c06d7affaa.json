@@ -1,11 +1,11 @@
 {
-  "_id": "69b08ca7374e8b19264a2f83",
+  "_id": "69b18a241522f3c06d7affaa",
   "type": "http",
-  "name": "n8nTest",
+  "name": "NetSuite Mock (Test)",
   "http": {
     "formType": "http",
     "mediaType": "json",
-    "baseURI": "https://sbc-dataops.app.n8n.cloud/webhook/01b6c67f-b529-461c-a976-3d5126eefae5",
+    "baseURI": "https://netsuite-mock-462343978447.us-central1.run.app",
     "concurrencyLevel": 25,
     "targetConcurrencyLevel": 25,
     "auth": {

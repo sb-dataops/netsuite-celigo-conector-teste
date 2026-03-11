@@ -1,6 +1,6 @@
 {
-  "_id": "69b0afb45c7c31ac84814fa9",
-  "name": "test_flow",
+  "_id": "69b1a6bd1ed3f28ef931b682",
+  "name": "netsuite_test_flow",
   "install": [],
   "installSteps": [],
   "uninstallSteps": [],
