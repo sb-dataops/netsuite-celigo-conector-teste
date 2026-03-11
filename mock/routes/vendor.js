@@ -57,13 +57,14 @@ router.post("/", async (req, res) => {
 
     console.log(`Vendor ${created ? "CREATED" : "UPDATED"}: ${data.externalId} → internalId=${record.internalId}`);
 
-    res.status(created ? 201 : 200).json({
+    const result = {
       internalId: record.internalId,
       externalId: record.externalId,
       recordType: "vendor",
       operation: created ? "created" : "updated",
       ...record,
-    });
+    };
+    res.status(created ? 201 : 200).json({ results: [result] });
   } catch (err) {
     console.error("vendor POST error:", err.message);
     res.status(500).json({ error: "Internal error", message: err.message });

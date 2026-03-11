@@ -8,6 +8,7 @@ const projectRoutes = require("./routes/project");
 const customrecordsRoutes = require("./routes/customrecords");
 const itemsRoutes = require("./routes/items");
 const invoiceRoutes = require("./routes/invoice");
+const orchestrateRoutes = require("./routes/orchestrate");
 
 const BASIC_AUTH_USER = process.env.BASIC_AUTH_USER || "NetSuiteMock";
 const BASIC_AUTH_PASS = process.env.BASIC_AUTH_PASS || "9v329yvyw8ZniQKtvX7f0mN9cW8FHe2I5W6EiDhK";
@@ -68,6 +69,7 @@ app.use("/api/project", projectRoutes);
 app.use("/api/customrecord", customrecordsRoutes);
 app.use("/api/item", itemsRoutes);
 app.use("/api/invoice", invoiceRoutes);
+app.use("/api/orchestrate", orchestrateRoutes);
 
 app.get("/api/records", async (_req, res) => {
   try {

@@ -15,6 +15,7 @@
     "sendAuthForFileDownloads": false,
     "formType": "http",
     "response": {
+      "resourcePath": "results",
       "twoDArray": {
         "doNotNormalize": false,
         "hasHeader": false

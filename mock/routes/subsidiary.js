@@ -35,7 +35,7 @@ router.get("/search", async (req, res) => {
       });
     }
 
-    res.json(active[0]);
+    res.json({ results: [active[0]] });
   } catch (err) {
     console.error("subsidiary/search error:", err.message);
     res.status(500).json({ error: "Internal error", message: err.message });

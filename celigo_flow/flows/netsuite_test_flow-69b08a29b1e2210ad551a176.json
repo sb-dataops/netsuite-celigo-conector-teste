@@ -15,15 +15,15 @@
         "fields": [
           {
             "extract": "country",
-            "generate": "_subsidiary.country"
+            "generate": "results[0].country"
           },
           {
             "extract": "name",
-            "generate": "_subsidiary.name"
+            "generate": "results[0].name"
           },
           {
             "extract": "internalId",
-            "generate": "_subsidiary.internalId"
+            "generate": "results[0].internalId"
           }
         ],
         "lists": []
@@ -36,11 +36,7 @@
         "fields": [
           {
             "extract": "internalId",
-            "generate": "_customer.internalId"
-          },
-          {
-            "extract": "companyName",
-            "generate": "_customer.companyName"
+            "generate": "results[0].internalId"
           }
         ],
         "lists": []
@@ -53,11 +49,7 @@
         "fields": [
           {
             "extract": "internalId",
-            "generate": "_vendor.internalId"
-          },
-          {
-            "extract": "companyName",
-            "generate": "_vendor.companyName"
+            "generate": "results[0].internalId"
           }
         ],
         "lists": []
@@ -70,7 +62,7 @@
         "fields": [
           {
             "extract": "internalId",
-            "generate": "_project.internalId"
+            "generate": "results[0].internalId"
           }
         ],
         "lists": []
@@ -83,7 +75,7 @@
         "fields": [
           {
             "extract": "internalId",
-            "generate": "_auction.internalId"
+            "generate": "results[0].internalId"
           }
         ],
         "lists": []
@@ -96,7 +88,7 @@
         "fields": [
           {
             "extract": "internalId",
-            "generate": "_lot.internalId"
+            "generate": "results[0].internalId"
           }
         ],
         "lists": []
@@ -109,7 +101,7 @@
         "fields": [
           {
             "extract": "internalId",
-            "generate": "_item.internalId"
+            "generate": "results[0].internalId"
           },
           {
             "extract": "taxSchedule",

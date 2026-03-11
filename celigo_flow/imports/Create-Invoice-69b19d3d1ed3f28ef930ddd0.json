@@ -20,7 +20,12 @@
     "batchSize": 1,
     "sendPostMappedData": true,
     "isRest": false,
-    "formType": "http"
+    "formType": "http",
+    "response": {
+      "resourceIdPath": [
+        "results"
+      ]
+    }
   },
   "adaptorType": "HTTPImport"
 }

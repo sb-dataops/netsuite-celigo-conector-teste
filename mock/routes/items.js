@@ -27,7 +27,7 @@ router.get("/search", async (req, res) => {
       });
     }
 
-    res.json(item);
+    res.json({ results: [item] });
   } catch (err) {
     console.error("item/search error:", err.message);
     res.status(500).json({ error: "Internal error", message: err.message });

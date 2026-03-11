@@ -52,13 +52,14 @@ router.post("/auction", async (req, res) => {
 
     console.log(`Auction ${created ? "CREATED" : "UPDATED"}: ${data.externalId} → internalId=${record.internalId}`);
 
-    res.status(created ? 201 : 200).json({
+    const result = {
       internalId: record.internalId,
       externalId: record.externalId,
       recordType: "customrecord_auction",
       operation: created ? "created" : "updated",
       ...record,
-    });
+    };
+    res.status(created ? 201 : 200).json({ results: [result] });
   } catch (err) {
     console.error("auction POST error:", err.message);
     res.status(500).json({ error: "Internal error", message: err.message });
@@ -109,13 +110,14 @@ router.post("/lot", async (req, res) => {
 
     console.log(`Lot ${created ? "CREATED" : "UPDATED"}: ${data.externalId} → internalId=${record.internalId}`);
 
-    res.status(created ? 201 : 200).json({
+    const result = {
       internalId: record.internalId,
       externalId: record.externalId,
       recordType: "customrecord_lot",
       operation: created ? "created" : "updated",
       ...record,
-    });
+    };
+    res.status(created ? 201 : 200).json({ results: [result] });
   } catch (err) {
     console.error("lot POST error:", err.message);
     res.status(500).json({ error: "Internal error", message: err.message });
