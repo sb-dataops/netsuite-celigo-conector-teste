@@ -1,0 +1,22 @@
+{
+  "_id": "69b08cc25c7c31ac847528ac",
+  "name": "n8n receive data",
+  "description": "n8n receive data teste",
+  "_connectionId": "69b08ca7374e8b19264a2f83",
+  "apiIdentifier": "i1cfba9852",
+  "ignoreExisting": false,
+  "ignoreMissing": false,
+  "oneToMany": false,
+  "http": {
+    "relativeURI": [],
+    "method": [
+      "POST"
+    ],
+    "body": [],
+    "batchSize": 1,
+    "sendPostMappedData": true,
+    "isRest": false,
+    "formType": "http"
+  },
+  "adaptorType": "HTTPImport"
+}

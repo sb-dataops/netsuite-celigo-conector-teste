@@ -1,0 +1,21 @@
+{
+  "_id": "69b08a29b1e2210ad551a176",
+  "name": "test_flow",
+  "pageGenerators": [
+    {
+      "_exportId": "69b08a282c73411308dd76b7",
+      "skipRetries": false
+    }
+  ],
+  "pageProcessors": [
+    {
+      "type": "import",
+      "_importId": "69b08cc25c7c31ac847528ac",
+      "responseMapping": {
+        "fields": [],
+        "lists": []
+      }
+    }
+  ],
+  "runPageGeneratorsInParallel": true
+}

@@ -1,0 +1,9 @@
+{
+  "_id": "69b0afb45c7c31ac84814fa9",
+  "name": "test_flow",
+  "install": [],
+  "installSteps": [],
+  "uninstallSteps": [],
+  "changeEditionSteps": [],
+  "flowGroupings": []
+}

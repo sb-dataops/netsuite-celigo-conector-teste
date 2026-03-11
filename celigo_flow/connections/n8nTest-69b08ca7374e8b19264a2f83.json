@@ -1,0 +1,15 @@
+{
+  "_id": "69b08ca7374e8b19264a2f83",
+  "type": "http",
+  "name": "n8nTest",
+  "http": {
+    "formType": "http",
+    "mediaType": "json",
+    "baseURI": "https://sbc-dataops.app.n8n.cloud/webhook/01b6c67f-b529-461c-a976-3d5126eefae5",
+    "concurrencyLevel": 25,
+    "targetConcurrencyLevel": 25,
+    "auth": {
+      "type": "basic"
+    }
+  }
+}
