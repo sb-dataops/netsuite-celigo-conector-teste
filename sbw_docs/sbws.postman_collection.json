@@ -66,7 +66,7 @@
             "token"
           ]
         },
-        "description": "Autenticacion OAuth2 Client Credentials para ambiente STAGING. El token se almacena automaticamente en la variable global stg_jwt_token_celigo. Ejecutar este request antes de cualquier otro."
+        "description": "OAuth2 Client Credentials authentication for STAGING environment. The token is automatically stored in the global variable stg_jwt_token_celigo. Run this request before any other."
       },
       "response": []
     },
@@ -129,7 +129,7 @@
             "token"
           ]
         },
-        "description": "Autenticacion OAuth2 Client Credentials para ambiente PRODUCCION. El token se almacena en la variable global prd_jwt_token_celigo. NO usar para desarrollo — solo para validacion final."
+        "description": "OAuth2 Client Credentials authentication for PRODUCTION environment. The token is stored in the global variable prd_jwt_token_celigo. DO NOT use for development — production validation only."
       },
       "response": []
     },
@@ -172,7 +172,7 @@
             }
           ]
         },
-        "description": "Consulta datos de un usuario Persona Fisica (Individual). Corresponde a buyer/seller en el spec. El parametro q filtra por userid con busqueda exacta. Mapea a: buyer.id, buyer.name, buyer.docNumber, etc."
+        "description": "Query Individual (Persona Fisica) user data. Maps to buyer/seller in the spec. The q parameter filters by userid with exact search. Maps to: buyer.id, buyer.name, buyer.docNumber, etc."
       },
       "response": []
     },
@@ -215,7 +215,7 @@
             }
           ]
         },
-        "description": "Consulta datos de un usuario Persona Juridica (Company). Mismo endpoint que PF pero con un userid de ejemplo de tipo empresa. Mapea a: seller.id, seller.name, seller.docNumber, etc."
+        "description": "Query Company (Persona Juridica) user data. Same endpoint as PF but with a company-type userid example. Maps to: seller.id, seller.name, seller.docNumber, etc."
       },
       "response": []
     },
@@ -260,7 +260,7 @@
             }
           ]
         },
-        "description": "Consulta datos de un proyecto comercial (Event Project). Mapea a: sale.eventProject.id, sale.eventProject.desc, businessUnitNumber, businessSegmentNumber, etc. Usar para resolver el Project padre en NetSuite (spec Step 5)."
+        "description": "Query commercial project (Event Project) data. Maps to: sale.eventProject.id, sale.eventProject.desc, businessUnitNumber, businessSegmentNumber, etc. Used to resolve the parent Project in NetSuite (spec Step 5)."
       },
       "response": []
     },
@@ -310,7 +310,7 @@
             }
           ]
         },
-        "description": "Consulta documentos de identidad/fiscal de una entidad. categoryId=2 corresponde a documentos fiscales. Nota: usa dominio stgsecure (no stgapi). Provee docNumber y docTypeId necesarios para la logica de clasificacion Individual vs Company (spec Appendix A)."
+        "description": "Query identity/tax documents for an entity. categoryId=2 corresponds to tax documents. Note: uses stgsecure domain (not stgapi). Provides docNumber and docTypeId required for Individual vs Company classification logic (spec Appendix A)."
       },
       "response": []
     },
@@ -353,7 +353,7 @@
             "27"
           ]
         },
-        "description": "Consulta calculo de impuestos (IVA/VAT) para una oferta/lot especifico. Path params: offerId, lotNumber, gestorId. NOTA: Este ejemplo apunta a produccion (secure.s4bdigital.net). Para staging usar stgsecure.s4bdigital.net con stg_jwt_token_celigo. Corresponde al spec Step 10: Tax Calculation."
+        "description": "Query tax calculation (VAT/IVA) for a specific offer/lot. Path params: offerId, lotNumber, gestorId. NOTE: This example points to production (secure.s4bdigital.net). For staging use stgsecure.s4bdigital.net with stg_jwt_token_celigo. Corresponds to spec Step 10: Tax Calculation."
       },
       "response": []
     }
