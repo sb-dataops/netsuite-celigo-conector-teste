@@ -1,0 +1,361 @@
+{
+  "info": {
+    "_postman_id": "899b63cc-00fd-44ff-86e9-f5871b541ff1",
+    "name": "sbws",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "3433405",
+    "_collection_link": "https://go.postman.co/collection/3433405-899b63cc-00fd-44ff-86e9-f5871b541ff1?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Create Token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();\r",
+              "var token = jsonData.access_token;\r",
+              "pm.globals.set(\"stg_jwt_token_celigo\", token);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "type": "text",
+              "key": "grant_type",
+              "value": "client_credentials"
+            },
+            {
+              "type": "text",
+              "key": "client_secret",
+              "value": "y9k4B1s3j4c5D1L8f2XR7v4K1t9p2o6o4g1W3B2q5j1s2A9s2n4k6Q1A2L5Z1Q9n6D"
+            },
+            {
+              "type": "text",
+              "key": "client_id",
+              "value": "8j3J6m2d5k3l7C5b0R1e3W6x4F3J5ç3-celigo"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://stgapi.s4bdigital.net/account/oauth/token",
+          "protocol": "https",
+          "host": [
+            "stgapi",
+            "s4bdigital",
+            "net"
+          ],
+          "path": [
+            "account",
+            "oauth",
+            "token"
+          ]
+        },
+        "description": "Autenticacion OAuth2 Client Credentials para ambiente STAGING. El token se almacena automaticamente en la variable global stg_jwt_token_celigo. Ejecutar este request antes de cualquier otro."
+      },
+      "response": []
+    },
+    {
+      "name": "Create Token PRD",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();\r",
+              "var token = jsonData.access_token;\r",
+              "pm.globals.set(\"prd_jwt_token_celigo\", token);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "type": "text",
+              "key": "grant_type",
+              "value": "client_credentials"
+            },
+            {
+              "type": "text",
+              "key": "client_secret",
+              "value": "XncNzHRijWoZIPKamq26"
+            },
+            {
+              "type": "text",
+              "key": "client_id",
+              "value": "61922-6bml5xv6a22027p6o984ge2414u4534e-s4b-con-sboracle"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://api.s4bdigital.net/account/oauth/token",
+          "protocol": "https",
+          "host": [
+            "api",
+            "s4bdigital",
+            "net"
+          ],
+          "path": [
+            "account",
+            "oauth",
+            "token"
+          ]
+        },
+        "description": "Autenticacion OAuth2 Client Credentials para ambiente PRODUCCION. El token se almacena en la variable global prd_jwt_token_celigo. NO usar para desarrollo — solo para validacion final."
+      },
+      "response": []
+    },
+    {
+      "name": "user PF",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{stg_jwt_token_celigo}}"
+          }
+        ],
+        "url": {
+          "raw": "https://stgapi.s4bdigital.net/account/v2/user/?q=userid%3A696295%2Cexactsearch%3Atrue%2Ccasesensitive%3Atrue&start=0&limit=50",
+          "protocol": "https",
+          "host": [
+            "stgapi",
+            "s4bdigital",
+            "net"
+          ],
+          "path": [
+            "account",
+            "v2",
+            "user",
+            ""
+          ],
+          "query": [
+            {
+              "key": "q",
+              "value": "userid%3A696295%2Cexactsearch%3Atrue%2Ccasesensitive%3Atrue"
+            },
+            {
+              "key": "start",
+              "value": "0"
+            },
+            {
+              "key": "limit",
+              "value": "50"
+            }
+          ]
+        },
+        "description": "Consulta datos de un usuario Persona Fisica (Individual). Corresponde a buyer/seller en el spec. El parametro q filtra por userid con busqueda exacta. Mapea a: buyer.id, buyer.name, buyer.docNumber, etc."
+      },
+      "response": []
+    },
+    {
+      "name": "user PJ",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{stg_jwt_token_celigo}}"
+          }
+        ],
+        "url": {
+          "raw": "https://stgapi.s4bdigital.net/account/v2/user/?q=userid%3A696295%2Cexactsearch%3Atrue%2Ccasesensitive%3Atrue&start=0&limit=50",
+          "protocol": "https",
+          "host": [
+            "stgapi",
+            "s4bdigital",
+            "net"
+          ],
+          "path": [
+            "account",
+            "v2",
+            "user",
+            ""
+          ],
+          "query": [
+            {
+              "key": "q",
+              "value": "userid%3A696295%2Cexactsearch%3Atrue%2Ccasesensitive%3Atrue"
+            },
+            {
+              "key": "start",
+              "value": "0"
+            },
+            {
+              "key": "limit",
+              "value": "50"
+            }
+          ]
+        },
+        "description": "Consulta datos de un usuario Persona Juridica (Company). Mismo endpoint que PF pero con un userid de ejemplo de tipo empresa. Mapea a: seller.id, seller.name, seller.docNumber, etc."
+      },
+      "response": []
+    },
+    {
+      "name": "commercial-project",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{stg_jwt_token_celigo}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://stgapi.s4bdigital.net/auction-lotting/commercial-project/?q=id%3A700427",
+          "protocol": "https",
+          "host": [
+            "stgapi",
+            "s4bdigital",
+            "net"
+          ],
+          "path": [
+            "auction-lotting",
+            "commercial-project",
+            ""
+          ],
+          "query": [
+            {
+              "key": "q",
+              "value": "id%3A700427"
+            }
+          ]
+        },
+        "description": "Consulta datos de un proyecto comercial (Event Project). Mapea a: sale.eventProject.id, sale.eventProject.desc, businessUnitNumber, businessSegmentNumber, etc. Usar para resolver el Project padre en NetSuite (spec Step 5)."
+      },
+      "response": []
+    },
+    {
+      "name": "document",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{stg_jwt_token_celigo}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://stgsecure.s4bdigital.net/account/v2/document/?entityId=1100669&categoryId=2",
+          "protocol": "https",
+          "host": [
+            "stgsecure",
+            "s4bdigital",
+            "net"
+          ],
+          "path": [
+            "account",
+            "v2",
+            "document",
+            ""
+          ],
+          "query": [
+            {
+              "key": "entityId",
+              "value": "1100669"
+            },
+            {
+              "key": "categoryId",
+              "value": "2"
+            }
+          ]
+        },
+        "description": "Consulta documentos de identidad/fiscal de una entidad. categoryId=2 corresponde a documentos fiscales. Nota: usa dominio stgsecure (no stgapi). Provee docNumber y docTypeId necesarios para la logica de clasificacion Individual vs Company (spec Appendix A)."
+      },
+      "response": []
+    },
+    {
+      "name": "TAX",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{prd_jwt_token_celigo}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://secure.s4bdigital.net/tax/offer/4567661/lot/1/gestor/27",
+          "protocol": "https",
+          "host": [
+            "secure",
+            "s4bdigital",
+            "net"
+          ],
+          "path": [
+            "tax",
+            "offer",
+            "4567661",
+            "lot",
+            "1",
+            "gestor",
+            "27"
+          ]
+        },
+        "description": "Consulta calculo de impuestos (IVA/VAT) para una oferta/lot especifico. Path params: offerId, lotNumber, gestorId. NOTA: Este ejemplo apunta a produccion (secure.s4bdigital.net). Para staging usar stgsecure.s4bdigital.net con stg_jwt_token_celigo. Corresponde al spec Step 10: Tax Calculation."
+      },
+      "response": []
+    }
+  ]
+}

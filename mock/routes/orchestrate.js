@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const db = require("../db");
+const sbw = require("../sbw-client");
 
 const router = Router();
 
@@ -13,8 +14,72 @@ router.post("/", async (req, res) => {
 
     const steps = [];
     const errors = [];
+    const enrichment = {};
 
-    // Step 1: Resolve Subsidiary
+    // ── Step 0: Enrich from Superbid API ─────────────────────
+    let buyerData = null;
+    let sellerData = null;
+    let projectData = null;
+    let taxData = null;
+    const sbwEnabled = !!process.env.SBW_CLIENT_ID;
+
+    try {
+      if (!sbwEnabled) throw new Error("SBW not configured, skipping enrichment");
+      const [buyerUser, sellerUser] = await Promise.all([
+        sale.buyer?.id ? sbw.getUser(sale.buyer.id) : null,
+        sale.seller?.id ? sbw.getUser(sale.seller.id) : null,
+      ]);
+
+      buyerData = sbw.extractUserData(buyerUser);
+      sellerData = sbw.extractUserData(sellerUser);
+
+      if (buyerData) enrichment.buyer = buyerData;
+      if (sellerData) enrichment.seller = sellerData;
+
+      const [projResult, buyerDoc, sellerDoc] = await Promise.all([
+        sale.eventProject?.id ? sbw.getCommercialProject(sale.eventProject.id) : null,
+        sale.buyer?.id ? sbw.getDocument(sale.buyer.id, 2) : null,
+        sale.seller?.id ? sbw.getDocument(sale.seller.id, 2) : null,
+      ]);
+
+      projectData = projResult;
+      if (projectData) enrichment.project = projectData;
+
+      if (buyerDoc?.documentNumber && buyerData) {
+        buyerData.docNumber = buyerData.docNumber || buyerDoc.documentNumber;
+        buyerData.docType = buyerData.docType || buyerDoc.typeName?.toUpperCase();
+        enrichment.buyerDocument = buyerDoc;
+      }
+      if (sellerDoc?.documentNumber && sellerData) {
+        sellerData.docNumber = sellerData.docNumber || sellerDoc.documentNumber;
+        sellerData.docType = sellerData.docType || sellerDoc.typeName?.toUpperCase();
+        enrichment.sellerDocument = sellerDoc;
+      }
+
+      if (sale.id && sale.offer?.lotNumber && sale.eventManager?.id) {
+        taxData = await sbw.getTax(sale.id, sale.offer.lotNumber, sale.eventManager.id);
+        if (taxData && taxData.id !== null) {
+          enrichment.tax = taxData;
+        } else {
+          taxData = null;
+        }
+      }
+
+      steps.push({
+        step: 0,
+        name: "Enrich from Superbid",
+        status: "completed",
+        buyerEnriched: !!buyerData,
+        sellerEnriched: !!sellerData,
+        projectEnriched: !!projectData,
+        taxEnriched: !!taxData,
+      });
+    } catch (err) {
+      errors.push({ step: 0, name: "Enrich from Superbid", error: err.message });
+      steps.push({ step: 0, name: "Enrich from Superbid", status: "partial", error: err.message });
+    }
+
+    // ── Step 1: Resolve Subsidiary ───────────────────────────
     const subsidiaryResults = await db.searchByField(
       "subsidiary",
       "custrecord_finley_entity_id",
@@ -31,61 +96,80 @@ router.post("/", async (req, res) => {
     }
     steps.push({ step: 1, name: "Resolve Subsidiary", internalId: subsidiary.internalId, status: "resolved" });
 
-    // Step 2: Upsert Customer (Buyer)
+    // ── Step 2: Upsert Customer (Buyer) ──────────────────────
     let customer;
     try {
-      const result = await db.upsert("customer", String(sale.buyer.id), {
+      const custData = {
         entityId: String(sale.buyer.id),
-        companyName: sale.buyer.name,
-        isPerson: true,
+        companyName: buyerData?.fullName || sale.buyer.name,
+        firstName: buyerData?.firstName || null,
+        lastName: buyerData?.lastName || null,
+        isPerson: buyerData?.isPerson ?? true,
         subsidiary: subsidiary.internalId,
-        country: sale.event?.locale?.countryIso,
-        currency: sale.event?.locale?.currency,
-        docNumber: sale.buyer.docNumber,
-        identityDocType: sale.buyer.identitydoctype,
+        country: buyerData?.countryCode || sale.event?.locale?.countryIso,
+        currency: buyerData?.currency || sale.event?.locale?.currency,
+        docNumber: buyerData?.docNumber || sale.buyer.docNumber,
+        identityDocType: buyerData?.docType || sale.buyer.identitydoctype,
+        email: buyerData?.email || null,
+        phone: buyerData?.phone || null,
+        address: buyerData?.address || null,
         status: "Active",
-      });
+      };
+      const result = await db.upsert("customer", String(sale.buyer.id), custData);
       customer = result.record;
-      steps.push({ step: 2, name: "Upsert Customer", internalId: customer.internalId, operation: result.created ? "created" : "updated" });
+      steps.push({ step: 2, name: "Upsert Customer", internalId: customer.internalId, operation: result.created ? "created" : "updated", enriched: !!buyerData });
     } catch (err) {
       errors.push({ step: 2, name: "Upsert Customer", error: err.message });
     }
 
-    // Step 3: Upsert Vendor (Seller)
+    // ── Step 3: Upsert Vendor (Seller) ───────────────────────
     let vendor;
     try {
-      const result = await db.upsert("vendor", `vndr_${sale.seller.id}`, {
-        companyName: sale.seller.name,
+      const vendData = {
+        companyName: sellerData?.fullName || sale.seller.name,
+        first_name: sellerData?.firstName || null,
+        last_name: sellerData?.lastName || null,
+        is_person: sellerData?.isPerson ?? false,
         subsidiary: subsidiary.internalId,
-        country: sale.event?.locale?.countryIso,
-        docNumber: sale.seller.docNumber,
+        country: sellerData?.countryCode || sale.event?.locale?.countryIso,
+        currency: sellerData?.currency || null,
+        docNumber: sellerData?.docNumber || sale.seller.docNumber,
+        identityDocType: sellerData?.docType || null,
+        email: sellerData?.email || null,
+        phone: sellerData?.phone || null,
+        address: sellerData?.address || null,
         category: "Vendedor",
         status: "Active",
-      });
+      };
+      const result = await db.upsert("vendor", `vndr_${sale.seller.id}`, vendData);
       vendor = result.record;
-      steps.push({ step: 3, name: "Upsert Vendor", internalId: vendor.internalId, operation: result.created ? "created" : "updated" });
+      steps.push({ step: 3, name: "Upsert Vendor", internalId: vendor.internalId, operation: result.created ? "created" : "updated", enriched: !!sellerData });
     } catch (err) {
       errors.push({ step: 3, name: "Upsert Vendor", error: err.message });
     }
 
-    // Step 4: Upsert Project
+    // ── Step 4: Upsert Project ───────────────────────────────
     let project;
     try {
-      const result = await db.upsert("project", String(sale.eventProject.id), {
-        projectName: sale.eventProject.desc,
+      const projData = {
+        projectName: projectData?.description || sale.eventProject.desc,
         startDate: sale.eventProject.creationDate,
+        end_date: projectData?.closeAt ? projectData.closeAt.split("T")[0] : null,
         subsidiary: subsidiary.internalId,
         department: String(sale.eventProject.businessUnitNumber),
         class: String(sale.eventProject.businessSegmentNumber),
         custentity_finley_country_iso: sale.eventManager?.countryIso,
-      });
+        sbw_owner_id: projectData?.ownerId || null,
+        sbw_store_id: projectData?.storeId || null,
+      };
+      const result = await db.upsert("project", String(sale.eventProject.id), projData);
       project = result.record;
-      steps.push({ step: 4, name: "Upsert Project", internalId: project.internalId, operation: result.created ? "created" : "updated" });
+      steps.push({ step: 4, name: "Upsert Project", internalId: project.internalId, operation: result.created ? "created" : "updated", enriched: !!projectData });
     } catch (err) {
       errors.push({ step: 4, name: "Upsert Project", error: err.message });
     }
 
-    // Step 5: Upsert Auction
+    // ── Step 5: Upsert Auction ───────────────────────────────
     let auction;
     try {
       const result = await db.upsert("auction", String(sale.event.id), {
@@ -103,7 +187,7 @@ router.post("/", async (req, res) => {
       errors.push({ step: 5, name: "Upsert Auction", error: err.message });
     }
 
-    // Step 6: Upsert Lot
+    // ── Step 6: Upsert Lot ───────────────────────────────────
     let lot;
     try {
       const lotExtId = `LOT-${sale.id}-${sale.offer?.lotNumber || 1}`;
@@ -120,7 +204,7 @@ router.post("/", async (req, res) => {
       errors.push({ step: 6, name: "Upsert Lot", error: err.message });
     }
 
-    // Step 7: Resolve Items
+    // ── Step 7: Resolve Items ────────────────────────────────
     const resolvedItems = [];
     for (const entry of sale.entries || []) {
       const item = await db.findByExternalId("item", String(entry.itemTypeId));
@@ -132,13 +216,14 @@ router.post("/", async (req, res) => {
     }
     steps.push({ step: 7, name: "Resolve Items", count: resolvedItems.length, status: "resolved" });
 
-    // Step 8: Create Invoice
+    // ── Step 8: Create Invoice ───────────────────────────────
     if (!customer || !subsidiary || resolvedItems.length === 0) {
       return res.status(422).json({
         status: "error",
         message: "Cannot create invoice: missing required entities",
         steps,
         errors,
+        enrichment,
       });
     }
 
@@ -200,6 +285,7 @@ router.post("/", async (req, res) => {
       taxTotal,
       total,
       taxDetails,
+      sbw_tax_data: taxData || null,
       status: "open",
     });
 
@@ -220,7 +306,7 @@ router.post("/", async (req, res) => {
 
     steps.push({ step: 8, name: "Create Invoice", internalId: invoice.internalId, externalId: invoiceExtId });
 
-    console.log(`ORCHESTRATE: ${invoiceExtId} → internalId=${invoice.internalId} | ${steps.length} steps | ${errors.length} errors`);
+    console.log(`ORCHESTRATE: ${invoiceExtId} → internalId=${invoice.internalId} | ${steps.length} steps | ${errors.length} errors | enriched=${!!buyerData}`);
 
     res.status(201).json({
       status: "success",
@@ -235,12 +321,13 @@ router.post("/", async (req, res) => {
       },
       entities: {
         subsidiary: { internalId: subsidiary.internalId, name: subsidiary.name, country: subsidiary.country },
-        customer: { internalId: customer.internalId, name: customer.companyName },
-        vendor: vendor ? { internalId: vendor.internalId, name: vendor.companyName } : null,
-        project: project ? { internalId: project.internalId, name: project.projectName } : null,
+        customer: { internalId: customer.internalId, name: customer.companyName, email: customer.email, enriched: !!buyerData },
+        vendor: vendor ? { internalId: vendor.internalId, name: vendor.companyName, enriched: !!sellerData } : null,
+        project: project ? { internalId: project.internalId, name: project.projectName, enriched: !!projectData } : null,
         auction: auction ? { internalId: auction.internalId, name: auction.name } : null,
         lot: lot ? { internalId: lot.internalId, externalId: lot.externalId } : null,
       },
+      enrichment,
       steps,
       errors,
     });

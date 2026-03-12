@@ -129,6 +129,10 @@ const STATES = {
 };
 
 const ITEMS_SEED = [
+  { ext: "1", name: "Comision Martillero", account: "4010" },
+  { ext: "2", name: "Comision Vendedor", account: "4011" },
+  { ext: "3", name: "Comision Comprador", account: "4012" },
+  { ext: "4", name: "Gastos de Escrituracion", account: "4013" },
   { ext: "5", name: "Encargos de Administracion", account: "4000" },
   { ext: "6", name: "Comision de Intermediacion", account: "4001" },
   { ext: "7", name: "Gastos Operativos", account: "4002" },

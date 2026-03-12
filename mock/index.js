@@ -1,5 +1,6 @@
 const express = require("express");
 const db = require("./db");
+const sbw = require("./sbw-client");
 
 const subsidiaryRoutes = require("./routes/subsidiary");
 const customerRoutes = require("./routes/customer");
@@ -22,6 +23,19 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
 }
 
 db.init(SUPABASE_URL, SUPABASE_KEY);
+
+if (process.env.SBW_CLIENT_ID && process.env.SBW_CLIENT_SECRET) {
+  sbw.init({
+    tokenUrl: process.env.SBW_TOKEN_URL || "https://api.s4bdigital.net/account/oauth/token",
+    apiBase: process.env.SBW_API_BASE || "https://api.s4bdigital.net",
+    secureBase: process.env.SBW_SECURE_BASE || "https://secure.s4bdigital.net",
+    clientId: process.env.SBW_CLIENT_ID,
+    clientSecret: process.env.SBW_CLIENT_SECRET,
+  });
+  console.log("SBW client initialized (enrichment enabled)");
+} else {
+  console.log("SBW credentials not set, enrichment disabled");
+}
 
 const app = express();
 app.use(express.json());
